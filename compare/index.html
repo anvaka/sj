@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Imperative vs Declarative</title>
+    <style type="text/css" media="all">
+      .declarative, .imperative { width: 50%; margin: 0; padding: 0; float: left;}
+      body { font-family: helvetica; padding: 25px; }
+      p { max-width: 580px; }
+      .demoInfo { clear: both; }
+      code { margin: 8px;}
+    </style>
+    <link rel="stylesheet" href="../external/highlight/styles/default.css">
+    <script src="../external/highlight/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </head>
+  <body>
+    <h2>Imperative vs Declarative drawing API</h2>
+    <p>
+    As a reference we'll take really good rendering library <a href='http://jonobr1.github.io/two.js/'>two.js</a>.
+    All examples on the left are written in two.js. Examples on the right are showing what they could look like
+    with declarative API.
+    </p><p>
+    Note: we are not trying to say two.js is bad or something. It has much more
+    to offer than only svg rendering. Sole purpose of this page is to check
+    available options with declarative API
+    </p>
+
+    <h3>Basic usage</h3>
+    <div class='demo'>
+    <div class='imperative'>
+      <h5>Imperative</h5>
+      <pre><code>
+// Make an instance of two and place it on the page.
+var elem = document.getElementById('draw-shapes').children[0];
+var params = { width: 285, height: 200 };
+var two = new Two(params).appendTo(elem);
+
+// two has convenience methods to create shapes.
+var circle = two.makeCircle(72, 100, 50);
+var rect = two.makeRectangle(213, 100, 100, 100);
+
+// The object returned has many stylable properties:
+circle.fill = '#FF8000';
+circle.stroke = 'orangered'; // Accepts all valid css color
+circle.linewidth = 5;
+
+rect.fill = 'rgb(0, 200, 255)';
+rect.opacity = 0.75;
+rect.noStroke();
+
+// Don't forget to tell two to render everything
+// to the screen
+two.update();
+</code></pre>
+    </div>
+    <div class='declarative'>
+      <h5>Declarative</h5>
+<pre><code>
+&lt;div id='#draw-shapes'&gt;
+  &lt;svg width=&quot;280&quot; height=&quot;200&quot;&gt;
+    &lt;circle cx=&quot;72&quot; cy=&quot;100&quot; r=&quot;50&quot; fill=&quot;#FF8000&quot;
+            stroke=&quot;orangered&quot; stroke-width=&quot;5&quot; /&gt;
+
+    &lt;rect x=&quot;150&quot; y=&quot;50&quot; width=&quot;100&quot; height=&quot;100&quot;
+          fill=&quot;rgb(0, 200, 255)&quot; opacity=&quot;0.75&quot;&gt;
+  &lt;/svg&gt;
+&lt;/div&gt;
+</code></pre>
+    </div>
+
+    <p class='demoInfo'>
+    As you can see declarative description in this case is much shorter and is
+    very explicit. In fact you don't even need any library: Code works in
+    your browser right now
+    </p>
+    </div>
+  </body>
+</html>

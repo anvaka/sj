@@ -1,7 +1,7 @@
 {
   "name": "sj",
-  "version": "0.0.0",
-  "description": "Fast declarative svg",
+  "version": "0.0.1",
+  "description": "Declarative require for your DOM",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

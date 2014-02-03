@@ -51,7 +51,9 @@ browserify -r ./index -r ./googleAnalytics > bundle.js
 require('sj').bind(document.body);
 ```
 
-Note: `sj` itself is super tiny. As of this writing it's less than 100 lines of unminified code. This entire google analytics example is only 121 lines long, unminified. That maps to 2.3KB of ungzipped code or 1,145 bytes of gziped code. With this tiny size it gives you incredible power: Anyone can use it via simple `npm install ...` command now.
+Note: `sj` itself is super tiny. As of this writing it's less than 100 lines of unminified code. This entire google analytics example is only 121 lines long, unminified. That maps to 2KB of gzipped, unminified code. Check network requests on this demo page: [google anlytics tag](http://anvaka.github.io/sj/demo/googleAnalytics/index.html).
+
+With this tiny size it gives you incredible power: Anyone can use it via simple `npm install ...` command now.
 
 # install
 

@@ -8,7 +8,7 @@ module.exports.bind = function(root, model, requires) {
   Object.keys(requires).forEach(attachElements);
 
   function attachElements(namespace) {
-    var nameStartsWithNamespace = "[starts-with(name(.), '" + namespace + ":')]";
+    var nameStartsWithNamespace = "[starts-with(local-name(.), '" + namespace + ":')]";
     xpath("descendant-or-self::node()" + nameStartsWithNamespace, root, nsResolver)
       .forEach(attachElement);
 

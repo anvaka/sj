@@ -1,6 +1,6 @@
 # sj
 
-Fast declarative svg
+This module provides declarative `require` in your DOM markup.
 
 # install
 

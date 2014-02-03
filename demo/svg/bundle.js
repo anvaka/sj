@@ -90,7 +90,7 @@ module.exports.bind = function(root, model, requires) {
   Object.keys(requires).forEach(attachElements);
 
   function attachElements(namespace) {
-    var nameStartsWithNamespace = "[starts-with(name(.), '" + namespace + ":')]";
+    var nameStartsWithNamespace = "[starts-with(local-name(.), '" + namespace + ":')]";
     xpath("descendant-or-self::node()" + nameStartsWithNamespace, root, nsResolver)
       .forEach(attachElement);
 
@@ -101,8 +101,9 @@ module.exports.bind = function(root, model, requires) {
   function attachElement(element) {
     if (!document.body.contains(element)) return; // i'm not sure about this...
 
-    var name = element.nodeName.split(':');
-    var module = require(requires[name[0]]);
+    var name = element.localName.split(':');
+    var moduleName = name[0]
+    var module = require(requires[moduleName]);
     var ctor = name[1];
     if (!(ctor in module)) {
       throw new Error('Cannot find ' + name[1] + ' in ' + name[0]);

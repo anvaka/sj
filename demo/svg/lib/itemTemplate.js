@@ -1,5 +1,5 @@
 module.exports = function (root, settings) {
-  var bind = require('../../../').bind; // require sj, we gonna go recursive
+  var bind = require('sj').bind; // require sj, we gonna go recursive
 
   var api = {
     appendTo: function (parent, model) {

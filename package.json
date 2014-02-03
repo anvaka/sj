@@ -1,13 +1,13 @@
 {
   "name": "sj",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Declarative require for your DOM",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "svg"
+    "declarative", "require"
   ],
   "author": "Andrei Kashcha",
   "license": "MIT",

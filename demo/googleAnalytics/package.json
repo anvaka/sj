@@ -1,0 +1,14 @@
+{
+  "name": "sj-googleanalytics-demo",
+  "version": "0.0.0",
+  "description": "This is only a demo of require for google analytics script",
+  "main": "index.js",
+  "scripts": {
+    "start": "browserify -r ./index -r ./googleAnalytics > bundle.js"
+  },
+  "author": "Andrei Kashcha",
+  "license": "MIT",
+  "dependencies": {
+    "sj": "0.0.1"
+  }
+}

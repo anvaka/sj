@@ -11,6 +11,5 @@ pids
 logs
 results
 
-bundle.js
 npm-debug.log
 node_modules

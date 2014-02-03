@@ -33,10 +33,7 @@
     <a href="http://angularjs.org/">angular.js</a> or <a href="http://emberjs.com/">ember.js</a></p>
     <p>
     In this post I wanted to explore available options for declarative programming of graphics.
-    </p><p>
     As a reference we'll take really good library <a href='http://jonobr1.github.io/two.js/'>two.js</a>.
-    All examples on the left are written in two.js. Examples on the right are showing what they could look like
-    with declarative API.
     </p><p class='sidenote'>
     I am not trying to say imperative API is bad. It has a lot of value
     to offer. Sole purpose of this post is to check alternative options with declarative API
@@ -153,9 +150,9 @@ two.bind('update', function(frameCount) {
 
         &lt;animateTransform attributeName=&quot;transform&quot; type=&quot;rotate&quot;
                     values=&quot;0 0 0;180 0 0;270 0 0;350 0 0; 360 0 0;&quot;
-                    keyTimes=&quot;0;0.25;0.5;0.9; 1&quot; dur=&quot;1s&quot; 
+                    keyTimes=&quot;0;0.25;0.5;0.9; 1&quot; dur=&quot;1s&quot;
                     repeatCount='indefinite' /&gt;
-        &lt;animateTransform attributeName='transform' type='scale' 
+        &lt;animateTransform attributeName='transform' type='scale'
                     keyTimes='0;0.3;0.75;1.0' values='0; 0.9;0.9;0.99;'
                     dur='1s' repeatCount='indefinite' additive='sum'/&gt;
       &lt;/g&gt;
@@ -166,10 +163,82 @@ two.bind('update', function(frameCount) {
       </div>
       <p class='demoInfo'>
       Declarative example works without any library in your browser:
-      <a href='http://plnkr.co/edit/zYEt4anAGH3yDvrrr8p0?p=preview'>demo</a>,
-      it is more concise. However it's arguably cleaner than imperative program,
+      </p>
+<div id='#draw-shapes'>
+  <svg width="280" height="200">
+    <g transform="translate(140, 100)">
+      <g>
+        <circle cx="-70" cy="0" r="50" fill="#FF8000"></circle>
+        <rect x="20" y="-50" width="100" height="100"
+              fill="rgb(0, 200, 255)" opacity="0.75"></rect>
+
+        <animateTransform attributeName="transform" type="rotate"
+                          values="0 0 0;180 0 0;270 0 0;350 0 0; 360 0 0;"
+                          keyTimes="0;0.25;0.5;0.9; 1" dur="1s"
+                          repeatCount='indefinite' />
+        <animateTransform attributeName='transform' type='scale'
+                          keyTimes='0;0.3;0.75;1.0' values='0; 0.9;0.9;0.99;'
+                          dur='1s' repeatCount='indefinite' additive='sum'/>
+      </g>
+    </g>
+  </svg>
+</div>
+      <p>
+      It is more concise too. However it's arguably cleaner than imperative program,
       and it cheats by hardcoding values for transforms, and animations. Frankly,
-      it was hard to even create similar animation using animateTransform tag.
+      it was hard to create similar animation using animateTransform tag.
+      </p>
+    </div>
+    <div class='demo'>
+      <h3>When declarative is not enough?</h3>
+      <p>
+       By nature imperative drawing is very well suited for dynamic programs. When
+       you don't know beforehand how many circles you might have on your screen.
+      </p>
+
+      <div class='imperative'>
+        <h5>Imperative</h5>
+        <pre><code>
+var elem = document.getElementById('draw-shapes').children[0];
+var params = { width: 285, height: 200 };
+var two = new Two(params).appendTo(elem);
+
+for (var i = 0; i &lt; 100; ++i) {
+  two.makeCircle(i * 5, Math.random() * 100, 5);
+}
+
+two.update();
+</code></pre>
+      </div>
+      <div class='declarative'>
+        <h5>Declarative</h5>
+<pre><code>
+&lt;div id='#draw-shapes'&gt;
+  &lt;svg width=&quot;280&quot; height=&quot;200&quot;&gt;
+&lt;!-- ??? --&gt;
+  &lt;/svg&gt;
+&lt;/div&gt;
+</code></pre>
+      </div>
+      <p class='demoInfo'>
+      Declarative API by definition cannot contain control flow, but can we
+      have best of two worlds? Of course we can! Angular.js uses bindings
+      and custom directives to achieve it. If only we could use something like this:
+      </p>
+<div class='imperative'>
+<pre><code>
+&lt;svg width=&quot;280&quot; height=&quot;200&quot;&gt;
+  &lt;g items-source=&quot;{circles}&quot;&gt;
+    &lt;item-template&gt;
+      &lt;circle cx=&quot;{x}&quot; cy=&quot;{y}&quot; r=&quot;5&quot; fill=&quot;#FF8000&quot;&gt;&lt;/circle&gt;
+    &lt;/item-template&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;
+</code></pre>
+</div>
+      <p class='demoInfo'>
+      Both <code>items-source</code> and <code>item-template</code> are not part of the
+      SVG specification, but maybe a library could implement this?
       </p>
     </div>
   </body>

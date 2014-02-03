@@ -9,6 +9,6 @@
   "author": "Andrei Kashcha",
   "license": "MIT",
   "dependencies": {
-    "sj": "0.0.1"
+    "sj": "~0.0"
   }
 }

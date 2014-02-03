@@ -20,7 +20,7 @@ This markup will install [google analytics](http://www.google.com/analytics/) sc
 </html>
 ```
 
-Notice special namespace on our `body` tag? When `sj` parses xml it finds all custom prefixes and checks if its URN starts with `require:XXX`. This gives it a hint where to look actual `analytics` export when it comes accross `s:analytics` tag. In this case it's relative file, `googleAnalytics.js`:
+Notice special namespace on our `body` tag? When `sj` parses xml it finds all custom prefixes and checks if their URN starts with `require:XXX`. This gives it a hint where to look actual `analytics` export when it comes across `s:analytics` tag. In this case it's relative file, `googleAnalytics.js`:
 
 ``` js
 // googleAnalytics.js:

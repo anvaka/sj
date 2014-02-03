@@ -24,13 +24,13 @@
     <p>
     Many drawing libraries propose imperative API to render objects.
     E.g. <a href="http://d3js.org/">d3</a>, <a href="http://raphaeljs.com/">Raphaël</a>,
-    <a href='http://fabricjs.com/'>fabric.js</a>, <a href="http://jonobr1.github.io/two.js/">two.js</a>
+    <a href='http://fabricjs.com/'>fabric.js</a>, <a href="http://jonobr1.github.io/two.js/">two.js</a>,
     <a href='http://svgjs.com/'>svg.js</a>, <a href='http://snapsvg.io/'>snap.svg</a>
     they all offer some sort of javascript API to draw scene and append objects to it.
     </p>
     <p>If you programmed in both HTML and MFC you'll know how much
     easier it is to use declarative API to describe UI. Especially if you used
-    <a href="http://angularjs.org/">angular.js</a> or <a href="http://emberjs.com/">ember.js</a></p>
+    <a href="http://angularjs.org/">angular.js</a> or <a href="http://emberjs.com/">ember.js</a>.</p>
     <p>
     In this post I wanted to explore available options for declarative programming of graphics.
     As a reference we'll take really good library <a href='http://jonobr1.github.io/two.js/'>two.js</a>.
@@ -50,12 +50,12 @@
       <pre><code>
 // Make an instance of two and place it on the page.
 var elem = document.getElementById('draw-shapes').children[0];
-var params = { width: 285, height: 200 };
+var params = { width: 280, height: 200 };
 var two = new Two(params).appendTo(elem);
 
 // two has convenience methods to create shapes.
 var circle = two.makeCircle(72, 100, 50);
-var rect = two.makeRectangle(213, 100, 100, 100);
+var rect = two.makeRectangle(150, 50, 100, 100);
 
 // The object returned has many stylable properties:
 circle.fill = '#FF8000';
@@ -111,10 +111,10 @@ two.update();
         <h5>Imperative</h5>
         <pre><code>
 var elem = document.getElementById('draw-animation').children[0];
-var two = new Two({ width: 285, height: 200 }).appendTo(elem);
+var two = new Two({ width: 280, height: 200 }).appendTo(elem);
 
 var circle = two.makeCircle(-70, 0, 50);
-var rect = two.makeRectangle(70, 0, 100, 100);
+var rect = two.makeRectangle(20, -50, 100, 100);
 circle.fill = '#FF8000';
 rect.fill = 'rgba(0, 200, 255, 0.75)';
 
@@ -200,7 +200,7 @@ two.bind('update', function(frameCount) {
         <h5>Imperative</h5>
         <pre><code>
 var elem = document.getElementById('draw-shapes').children[0];
-var params = { width: 285, height: 200 };
+var params = { width: 280, height: 200 };
 var two = new Two(params).appendTo(elem);
 
 for (var i = 0; i &lt; 100; ++i) {

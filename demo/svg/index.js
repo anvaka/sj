@@ -7,7 +7,7 @@ module.exports = function () {
     });
   }
 
-  var sj = require('../');
+  var sj = require('sj');
   sj.bind(document.getElementById('scene'), {
     circles: circles
   });

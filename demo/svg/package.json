@@ -7,5 +7,8 @@
     "start": "browserify -r ./index -r ./svgcore > bundle.js"
   },
   "author": "Andrei Kashcha",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "sj": "~0.0"
+  }
 }

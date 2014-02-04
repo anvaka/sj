@@ -1,6 +1,6 @@
 {
   "name": "sj",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Declarative require for your DOM",
   "main": "index.js",
   "scripts": {

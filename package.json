@@ -4,15 +4,20 @@
   "description": "Declarative require for your DOM",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cd ./test && browserify -r ./marker > ./precompiled/marker.js && cd ../ && zuul --local 4738 --ui mocha-qunit -- test/index.js"
   },
   "keywords": [
-    "declarative", "require"
+    "declarative",
+    "require"
   ],
   "author": "Andrei Kashcha",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/anvaka/sj"
+  },
+  "devDependencies": {
+    "mocha": "~1.17.1",
+    "zuul": "~1.5.2"
   }
 }

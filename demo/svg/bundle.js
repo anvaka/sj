@@ -36,21 +36,21 @@ module.exports = function (root, attribute, settings) {
 
 
 },{"./bindingParser":3}],5:[function(require,module,exports){
-module.exports = function (root, settings) {
+module.exports = function (root, ctx) {
   var bind = require('sj').bind; // require sj, we gonna go recursive
-
   var api = {
     appendTo: function (parent, model) {
-      for (var i = 0; i < root.children.length; ++i) {
-        var childNode = root.children[i].cloneNode(true);
+      for (var i = 0; i < root.childNodes.length; ++i) {
+        var childNode = root.childNodes[i].cloneNode(true);
         parent.appendChild(childNode);
-        bind(childNode, model, settings.requires);
+        bind(childNode, model, ctx);
       }
     }
   };
+  var parent = root.parentNode;
+  parent.removeChild(root); // detach ourself
 
-  root.parentNode['__sjItemTemplate'] = api;
-  root.parentNode.removeChild(root); // detach ourself
+  ctx.fire('item-template-attached', api, parent);
 };
 
 },{"sj":7}],6:[function(require,module,exports){
@@ -58,8 +58,8 @@ module.exports = itemsSource;
 
 var parseBinding = require('./bindingParser');
 
-function itemsSource(root, attribute, settings) {
-  var model = settings.model;
+function itemsSource(root, attribute, ctx) {
+  var model = ctx.model;
   if (!model) {
     throw new Error('Data model is not declared. Cannot use items-source without model');
   }
@@ -68,111 +68,119 @@ function itemsSource(root, attribute, settings) {
   var sourceArray = model[sourceKey];
   if (!sourceArray) { throw new Error('Cannot find ' + sourceKey + ' in current model'); }
 
-  var itemTemplate = root['__sjItemTemplate'] || defaultItemTemplate();
+  ctx.on('item-template-attached', function (itemTemplate, node) {
+    if (node !== root) return; // it's not our child
 
-  for (var i = 0; i < sourceArray.length; ++i) {
-    itemTemplate.appendTo(root, sourceArray[i]);
-  }
-}
-
-function defaultItemTemplate() {
-  throw new Error('Not implemented');
+    // this is silly. Need to come up with something better. Two-pass maybe?
+    // compile/link?
+    setTimeout(function() {
+      for (var i = 0; i < sourceArray.length; ++i) {
+        itemTemplate.appendTo(root, sourceArray[i]);
+      }
+    })
+  });
 }
 
 },{"./bindingParser":3}],7:[function(require,module,exports){
-var xpath = require('./lib/xpath');
+module.exports.bind = function(root, model, ctx) {
+  ctx = ctx || {};
+  if (!ctx.requires) {
+    ctx.requires = {};
+  }
+  var requires = ctx.requires || {};
 
-module.exports.bind = function(root, model, requires) {
-  var baseNamespace = root.namespaceURI;
+  ctx.model = model;
+  addEvents(ctx);
 
-  requires = xpath("descendant-or-self::node()[@*[starts-with(name(.), 'xmlns:')]]", root).reduce(reduceRequire, requires || {});
+  compileSubtree(root);
 
-  Object.keys(requires).forEach(attachElements);
-
-  function attachElements(namespace) {
-    var nameStartsWithNamespace = "[starts-with(local-name(.), '" + namespace + ":')]";
-    xpath("descendant-or-self::node()" + nameStartsWithNamespace, root, nsResolver)
-      .forEach(attachElement);
-
-    xpath("descendant-or-self::node()[@*" + nameStartsWithNamespace + "]", root, nsResolver)
-      .forEach(attachElementAttributes);
+  function compileSubtree(root) {
+    if (root.localName && compileNode(root)) {
+      return true;
+    }
+    for (var i = 0; i < root.childNodes.length; ++i) {
+      compileSubtree(root.childNodes[i]);
+    }
   }
 
-  function attachElement(element) {
-    if (!document.body.contains(element)) return; // i'm not sure about this...
+  function compileNode(node) {
+    var nameParts = node.localName.split(':');
+    var foundComponent = false;
+    if (nameParts.length === 2 && nameParts[0] in requires) {
+      // potentially candidate for require
+      var module = require(requires[nameParts[0]]);
+      var ctor = module[nameParts[1]];
+      if (typeof ctor !== 'function') {
+        throw new Error('Cannot find function ' + nameParts[1] + ' in module ' + nameParts[0]);
+      }
 
-    var name = element.localName.split(':');
-    var moduleName = name[0]
-    var module = require(requires[moduleName]);
-    var ctor = name[1];
-    if (!(ctor in module)) {
-      throw new Error('Cannot find ' + name[1] + ' in ' + name[0]);
+      ctor(node, ctx);
+      foundComponent = true;
     }
 
-    module[ctor](element, {
-      requires: requires,
-      model: model
-    });
+    if (node.nodeType === 1) { // element node, compile attributes;
+      var attributes = node.attributes;
+      for (var i = 0; i < attributes.length; ++i) {
+        compileAttribute(node, attributes[i]);
+      }
+    }
+
+    return foundComponent;
   }
 
-  function attachElementAttributes(element) {
-    for (var i = 0; i < element.attributes.length; ++i) {
-      var attribute = element.attributes[i];
-      var name = attribute.nodeName.split(':');
-      if (name.length !== 2 || !requires[name[0]]) continue;
+  function compileAttribute(node, attribute) {
+    var nameParts = attribute.localName.split(':');
+    if (nameParts.length !== 2) return; // not our candidate
 
-      var module = require(requires[name[0]]);
-      var ctor = name[1];
-      if (ctor in module) {
-        module[ctor](element, attribute, {
-            requires: requires,
-            model: model
-          });
-      } else if ('*' in module) {
-        module['*'](element, attribute, {
-            requires: requires,
-            model: model
-          });
+    var isNamespace = nameParts[0] === 'xmlns';
+    if (isNamespace) {
+      var requireMatch = attribute.nodeValue && attribute.nodeValue.match(/^require:(.+)$/);
+      if (requireMatch) {
+        requires[nameParts[1]] = requireMatch[1];
+      }
+    } else if (nameParts[0] in requires) {
+      // we've seen it before, and there is registered handler:
+      var module = require(requires[nameParts[0]]);
+      var ctor = module[nameParts[1]] || module['*'];
+      if (typeof ctor === 'function') {
+        ctor(node, attribute, ctx);
       } else {
-        throw new Error('Cannot find ' + name[1] + ' in ' + name[0]);
+        throw new Error('Cannot find ' + nameParts[1] + ' attribute in module ' + nameParts[0]);
       }
     }
   }
-
-  function nsResolver(key) {
-    var value = requires[key];
-    if (!value) return null;
-
-    return baseNamespace;
-  }
 }
 
-function reduceRequire(requires, element) {
-  for (var i = 0; i < element.attributes.length; ++i) {
-    var attribute = element.attributes[i];
-    var attributeValue = attribute.nodeValue;
-    var match = attributeValue.match(/^require:(.+)$/);
-    if (match) {
-      var name = attribute.nodeName.split('xmlns:')[1];
-      requires[name] = match[1];
+function addEvents(obj) {
+  if (typeof obj.on === 'function' && typeof obj.fire === 'function') {
+    return;
+  }
+  var store = {};
+
+  obj.on = function (name, handler) {
+    var handlers = store[name];
+    if(!handlers) {
+      store[name] = [handler];
+    } else {
+      handlers.push(handler);
     }
   }
 
-  return requires;
-}
+  obj.off = function (name, handler) {
+    var handlers = store[name];
+    if (!handler) { return; }
 
-},{"./lib/xpath":8}],8:[function(require,module,exports){
-module.exports = function (path, root, nsResolver) {
-  var snapshot = root.ownerDocument.evaluate(path,
-                    root, nsResolver,
-                    XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
-  var items = [];
-
-  for (var i = 0; i < snapshot.snapshotLength; ++i) {
-    items.push(snapshot.snapshotItem(i));
+    var idx = handlers.indexOf(handler);
+    if (idx !== -1) handlers.splice(idx);
   }
 
-  return items;
+  obj.fire = function (name) {
+    var handlers = store[name];
+    if (handlers) {
+      var args = Array.prototype.splice.call(arguments, 1);
+      handlers.forEach(function (cb) { cb.apply(null, args); });
+    }
+  }
 }
 
 },{}],"afnvge":[function(require,module,exports){

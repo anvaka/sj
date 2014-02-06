@@ -2,7 +2,6 @@
  * This module implements bindings for svg
  */
 module.exports = {
-  'item-template': require('./lib/itemTemplate'),
-  'items-source': require('./lib/itemsSource'),
+  'items': require('./lib/items'),
   '*' : require('./lib/defaultDataBinder') 
 };

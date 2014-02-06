@@ -14,7 +14,7 @@ module.exports = function () {
   });
 };
 
-},{"sj":7}],"./index":[function(require,module,exports){
+},{"sj":6}],"./index":[function(require,module,exports){
 module.exports=require('Vf51PD');
 },{}],3:[function(require,module,exports){
 module.exports = function parseBinding(value) {
@@ -38,59 +38,41 @@ module.exports = function (root, attribute, settings) {
 },{"./bindingParser":3}],5:[function(require,module,exports){
 module.exports = function (root, ctx) {
   var bind = require('sj').bind; // require sj, we gonna go recursive
-  var api = {
-    appendTo: function (parent, model) {
-      for (var i = 0; i < root.childNodes.length; ++i) {
-        var childNode = root.childNodes[i].cloneNode(true);
-        parent.appendChild(childNode);
-        bind(childNode, model, ctx);
-      }
-    }
-  };
   var parent = root.parentNode;
-  parent.removeChild(root); // detach ourself
+  parent.removeChild(root);
 
-  ctx.fire('item-template-attached', api, parent);
+  var itemsSource = root.attributes.getNamedItem('source').nodeValue;
+
+  // just to make sure we modify subtree on next iteration
+  // of event loop:
+  setTimeout(function () {
+    getCollection(itemsSource, ctx.model).forEach(renderChildren);
+  });
+
+  function renderChildren(model) {
+    for (var i = 0; i < root.childNodes.length; ++i) {
+      var childNode = root.childNodes[i].cloneNode(true);
+      parent.appendChild(childNode);
+      bind(childNode, model, ctx.requires);
+    }
+  }
 };
 
-},{"sj":7}],6:[function(require,module,exports){
-module.exports = itemsSource;
-
-var parseBinding = require('./bindingParser');
-
-function itemsSource(root, attribute, ctx) {
-  var model = ctx.model;
+function getCollection(bindingExpression, model) {
   if (!model) {
-    throw new Error('Data model is not declared. Cannot use items-source without model');
+    throw new Error('Data model is not declared. Cannot use items-template without item-source on parent');
   }
 
-  var sourceKey = parseBinding(attribute.nodeValue);
-  var sourceArray = model[sourceKey];
-  if (!sourceArray) { throw new Error('Cannot find ' + sourceKey + ' in current model'); }
+  var parseBinding = require('./bindingParser');
+  var sourceKey = parseBinding(bindingExpression);
+  if (!model[sourceKey]) throw new Error('Cannot find ' + sourceKey + ' in current model');
 
-  ctx.on('item-template-attached', function (itemTemplate, node) {
-    if (node !== root) return; // it's not our child
-
-    // this is silly. Need to come up with something better. Two-pass maybe?
-    // compile/link?
-    setTimeout(function() {
-      for (var i = 0; i < sourceArray.length; ++i) {
-        itemTemplate.appendTo(root, sourceArray[i]);
-      }
-    })
-  });
+  return model[sourceKey];
 }
 
-},{"./bindingParser":3}],7:[function(require,module,exports){
-module.exports.bind = function(root, model, ctx) {
-  ctx = ctx || {};
-  if (!ctx.requires) {
-    ctx.requires = {};
-  }
-  var requires = ctx.requires || {};
-
-  ctx.model = model;
-  addEvents(ctx);
+},{"./bindingParser":3,"sj":6}],6:[function(require,module,exports){
+module.exports.bind = function(root, model, requires) {
+  requires = requires || {};
 
   compileSubtree(root);
 
@@ -114,7 +96,7 @@ module.exports.bind = function(root, model, ctx) {
         throw new Error('Cannot find function ' + nameParts[1] + ' in module ' + nameParts[0]);
       }
 
-      ctor(node, ctx);
+      ctor(node, { model: model, requires: requires });
       foundComponent = true;
     }
 
@@ -143,42 +125,10 @@ module.exports.bind = function(root, model, ctx) {
       var module = require(requires[nameParts[0]]);
       var ctor = module[nameParts[1]] || module['*'];
       if (typeof ctor === 'function') {
-        ctor(node, attribute, ctx);
+        ctor(node, attribute, { model: model, requires: requires });
       } else {
         throw new Error('Cannot find ' + nameParts[1] + ' attribute in module ' + nameParts[0]);
       }
-    }
-  }
-}
-
-function addEvents(obj) {
-  if (typeof obj.on === 'function' && typeof obj.fire === 'function') {
-    return;
-  }
-  var store = {};
-
-  obj.on = function (name, handler) {
-    var handlers = store[name];
-    if(!handlers) {
-      store[name] = [handler];
-    } else {
-      handlers.push(handler);
-    }
-  }
-
-  obj.off = function (name, handler) {
-    var handlers = store[name];
-    if (!handler) { return; }
-
-    var idx = handlers.indexOf(handler);
-    if (idx !== -1) handlers.splice(idx);
-  }
-
-  obj.fire = function (name) {
-    var handlers = store[name];
-    if (handlers) {
-      var args = Array.prototype.splice.call(arguments, 1);
-      handlers.forEach(function (cb) { cb.apply(null, args); });
     }
   }
 }
@@ -188,12 +138,11 @@ function addEvents(obj) {
  * This module implements bindings for svg
  */
 module.exports = {
-  'item-template': require('./lib/itemTemplate'),
-  'items-source': require('./lib/itemsSource'),
+  'items': require('./lib/items'),
   '*' : require('./lib/defaultDataBinder') 
 };
 
-},{"./lib/defaultDataBinder":4,"./lib/itemTemplate":5,"./lib/itemsSource":6}],"./svgcore":[function(require,module,exports){
+},{"./lib/defaultDataBinder":4,"./lib/items":5}],"./svgcore":[function(require,module,exports){
 module.exports=require('afnvge');
 },{}]},{},[])
 ;

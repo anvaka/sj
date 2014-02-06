@@ -21,15 +21,8 @@ require('sj').bind(document.body);
 },{"sj":5}],"./index":[function(require,module,exports){
 module.exports=require('qbx5np');
 },{}],5:[function(require,module,exports){
-module.exports.bind = function(root, model, ctx) {
-  ctx = ctx || {};
-  if (!ctx.requires) {
-    ctx.requires = {};
-  }
-  var requires = ctx.requires || {};
-
-  ctx.model = model;
-  addEvents(ctx);
+module.exports.bind = function(root, model, requires) {
+  requires = requires || {};
 
   compileSubtree(root);
 
@@ -53,7 +46,7 @@ module.exports.bind = function(root, model, ctx) {
         throw new Error('Cannot find function ' + nameParts[1] + ' in module ' + nameParts[0]);
       }
 
-      ctor(node, ctx);
+      ctor(node, { model: model, requires: requires });
       foundComponent = true;
     }
 
@@ -82,42 +75,10 @@ module.exports.bind = function(root, model, ctx) {
       var module = require(requires[nameParts[0]]);
       var ctor = module[nameParts[1]] || module['*'];
       if (typeof ctor === 'function') {
-        ctor(node, attribute, ctx);
+        ctor(node, attribute, { model: model, requires: requires });
       } else {
         throw new Error('Cannot find ' + nameParts[1] + ' attribute in module ' + nameParts[0]);
       }
-    }
-  }
-}
-
-function addEvents(obj) {
-  if (typeof obj.on === 'function' && typeof obj.fire === 'function') {
-    return;
-  }
-  var store = {};
-
-  obj.on = function (name, handler) {
-    var handlers = store[name];
-    if(!handlers) {
-      store[name] = [handler];
-    } else {
-      handlers.push(handler);
-    }
-  }
-
-  obj.off = function (name, handler) {
-    var handlers = store[name];
-    if (!handler) { return; }
-
-    var idx = handlers.indexOf(handler);
-    if (idx !== -1) handlers.splice(idx);
-  }
-
-  obj.fire = function (name) {
-    var handlers = store[name];
-    if (handlers) {
-      var args = Array.prototype.splice.call(arguments, 1);
-      handlers.forEach(function (cb) { cb.apply(null, args); });
     }
   }
 }

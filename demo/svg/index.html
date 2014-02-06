@@ -6,10 +6,10 @@
 </head>
 <body onload='require("./index")()'>
   <svg xmlns:s="require:./svgcore" width="640" height="480" id='scene'>
-    <g s:items-source="{circles}">
-      <s:item-template>
+    <g>
+      <s:items source="{circles}">
         <circle s:cx="{x}" s:cy="{y}" r="5" fill="#FF8000"></circle>
-      </s:item-template>
+      </s:items>
     </g>
   </svg>
 </body>

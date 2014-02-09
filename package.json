@@ -3,7 +3,7 @@
     "sj": "bin/cmd.js"
   },
   "name": "sj",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Declarative require for your DOM",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,9 @@
   },
   "devDependencies": {
     "mocha": "~1.17.1",
-    "zuul": "~1.5.2",
-    "browserify": "~3.24.11"
+    "zuul": "~1.5.2"
+  },
+  "dependencies": {
+    "browserify": "~3.26.0"
   }
 }

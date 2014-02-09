@@ -4,7 +4,7 @@
   "description": "This is only a demo of require for google analytics script",
   "main": "index.js",
   "scripts": {
-    "start": "browserify -r ./index -r ./googleAnalytics > bundle.js"
+    "start": "sj index.html > bundle.js"
   },
   "author": "Andrei Kashcha",
   "license": "MIT",

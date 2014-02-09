@@ -51,7 +51,7 @@ sj index.html > bundle.js
 Under the hood `sj` binary finds all xmlns requires, and uses browserify to
 create a bundle.
 
-Note: `sj` itself is super tiny. As of this writing it's less than 100 lines of
+Note: `sj` runtime is super tiny. As of this writing it's less than 100 lines of
 unminified code. This entire google analytics example is only 121 lines long,
 unminified. That maps to 2KB of gzipped, unminified code. Check network requests
 on this demo page: [google anlytics tag](http://anvaka.github.io/sj/demo/googleAnalytics/index.html).

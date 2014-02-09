@@ -4,7 +4,7 @@ This module provides declarative `require` in your DOM markup.
 
 # Example
 
-This markup will install [google analytics](http://www.google.com/analytics/) script on your page. 
+This markup will install google analytics script on your page. 
 
 ``` html
 <!DOCTYPE html>
@@ -54,7 +54,7 @@ create a bundle.
 Note: `sj` runtime is super tiny. As of this writing it's less than 100 lines of
 unminified code. This entire google analytics example is only 121 lines long,
 unminified. That maps to 2KB of gzipped, unminified code. Check network requests
-on this demo page: [google anlytics tag](http://anvaka.github.io/sj/demo/googleAnalytics/index.html).
+on this demo page: [google analytics tag](http://anvaka.github.io/sj/demo/googleAnalytics/index.html).
 
 With this tiny size it gives you incredible power: Anyone can use custom dom elements
 via simple `npm install ...` command.

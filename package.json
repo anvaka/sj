@@ -22,7 +22,6 @@
   "devDependencies": {
     "mocha": "~1.17.1",
     "zuul": "~1.5.2",
-    "browserify": "~3.24.11",
-    "minimist": "0.0.5"
+    "browserify": "~3.24.11"
   }
 }

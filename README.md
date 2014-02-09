@@ -10,24 +10,27 @@ This markup will install [google analytics](http://www.google.com/analytics/) sc
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="bundle.js"></script>
+    <title>Declarative require from html</title>
   </head>
-
-  <body xmlns:s="require:./googleAnalytics"
-        onload="require('./index')">
+  <body xmlns:s="require:./googleAnalytics">
     <s:analytics domain='my.site.com' ua='UA-XXXXXXXX-1'/>
+
+    <script src="bundle.js"></script>
   </body>
 </html>
 ```
 
-Notice special namespace on our `body` tag? When `sj` parses xml it finds all custom prefixes and checks if their URN starts with `require:XXX`. This gives it a hint where to look actual `analytics` export when it comes across `s:analytics` tag. In this case it's relative file, `googleAnalytics.js`:
+Notice special namespace on our `body` tag? When `sj` parses xml it finds all
+custom prefixes and checks if their URN starts with `require:XXX`. This gives
+it a hint where to look actual `analytics` export when it comes across
+`s:analytics` tag. In this case it's relative file, `googleAnalytics.js`:
 
 ``` js
 // googleAnalytics.js:
 module.exports.analytics = function (root) {
   var domain = root.attributes.getNamedItem('domain').nodeValue;
   var ua = root.attributes.getNamedItem('ua').nodeValue;
-  
+
   // this is standard google analytics include script:
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -42,18 +45,19 @@ module.exports.analytics = function (root) {
 To make this all work we browserify our input files into a bundle:
 
 ```
-browserify -r ./index -r ./googleAnalytics > bundle.js
+sj index.html > bundle.js
 ```
 
-`index.js` is a one-liner to launch sj:
+Under the hood `sj` binary finds all xmlns requires, and uses browserify to
+create a bundle.
 
-``` js
-require('sj').bind(document.body);
-```
+Note: `sj` itself is super tiny. As of this writing it's less than 100 lines of
+unminified code. This entire google analytics example is only 121 lines long,
+unminified. That maps to 2KB of gzipped, unminified code. Check network requests
+on this demo page: [google anlytics tag](http://anvaka.github.io/sj/demo/googleAnalytics/index.html).
 
-Note: `sj` itself is super tiny. As of this writing it's less than 100 lines of unminified code. This entire google analytics example is only 121 lines long, unminified. That maps to 2KB of gzipped, unminified code. Check network requests on this demo page: [google anlytics tag](http://anvaka.github.io/sj/demo/googleAnalytics/index.html).
-
-With this tiny size it gives you incredible power: Anyone can use it via simple `npm install ...` command now.
+With this tiny size it gives you incredible power: Anyone can use custom dom elements
+via simple `npm install ...` command.
 
 # install
 

@@ -1,5 +1,6 @@
 module.exports.bind = function(root, model, requires) {
   requires = requires || {};
+  model = model || {};
 
   compileSubtree(root);
 
@@ -23,7 +24,7 @@ module.exports.bind = function(root, model, requires) {
         throw new Error('Cannot find function ' + nameParts[1] + ' in module ' + nameParts[0]);
       }
 
-      ctor(node, { model: model, requires: requires });
+      ctor(node, model, requires);
       foundComponent = true;
     }
 
@@ -52,10 +53,10 @@ module.exports.bind = function(root, model, requires) {
       var module = require(requires[nameParts[0]]);
       var ctor = module[nameParts[1]] || module['*'];
       if (typeof ctor === 'function') {
-        ctor(node, attribute, { model: model, requires: requires });
+        ctor(node, attribute, model, requires);
       } else {
         throw new Error('Cannot find ' + nameParts[1] + ' attribute in module ' + nameParts[0]);
       }
     }
   }
-}
+};

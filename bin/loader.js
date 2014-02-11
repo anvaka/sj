@@ -2,7 +2,8 @@ var sj = require('../');
 var docLoaded = setInterval(checkDomReady);
 
 function checkDomReady() {
-  if (document.readyState === "complete") {
+  var state = document.readyState;
+  if (state === "complete" || state === "interactive") {
     clearInterval(docLoaded);
     sj.bind(document.body);
   }

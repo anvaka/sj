@@ -4,13 +4,16 @@
   <script type="text/javascript" charset="utf-8" src='bundle.js'></script>
   <title>Simple declarative require + binding demo</title>
 </head>
-<body onload='require("./index")()'>
-  <svg xmlns:s="require:./svgcore" width="640" height="480" id='scene'>
-    <g>
-      <s:items source="{circles}">
-        <circle s:cx="{x}" s:cy="{y}" r="5" fill="#FF8000"></circle>
-      </s:items>
-    </g>
-  </svg>
+<body xmlns:s="require:./svgcore"
+      xmlns:controller="require:./controller">
+  <controller:scene>
+    <svg width="640" height="480" id='scene'>
+      <g>
+        <s:items source="{circles}">
+          <circle s:cx="{x}" s:cy="{y}" r="5" fill="#FF8000"></circle>
+        </s:items>
+      </g>
+    </svg>
+  </controller:scene>
 </body>
 </html>

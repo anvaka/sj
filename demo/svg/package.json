@@ -4,7 +4,7 @@
   "description": "This is only a demo of require inside svg; can be easily adopted to html",
   "main": "index.js",
   "scripts": {
-    "start": "browserify -r ./index -r ./svgcore > bundle.js"
+    "start": "sj index.html > bundle.js"
   },
   "author": "Andrei Kashcha",
   "license": "MIT",

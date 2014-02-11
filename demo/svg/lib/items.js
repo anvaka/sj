@@ -1,4 +1,4 @@
-module.exports = function (root, ctx) {
+module.exports = function (root, model, requires) {
   var bind = require('sj').bind; // require sj, we gonna go recursive
   var parent = root.parentNode;
   parent.removeChild(root);
@@ -8,14 +8,14 @@ module.exports = function (root, ctx) {
   // just to make sure we modify subtree on next iteration
   // of event loop:
   setTimeout(function () {
-    getCollection(itemsSource, ctx.model).forEach(renderChildren);
+    getCollection(itemsSource, model).forEach(renderChildren);
   });
 
   function renderChildren(model) {
     for (var i = 0; i < root.childNodes.length; ++i) {
       var childNode = root.childNodes[i].cloneNode(true);
       parent.appendChild(childNode);
-      bind(childNode, model, ctx.requires);
+      bind(childNode, model, requires);
     }
   }
 };

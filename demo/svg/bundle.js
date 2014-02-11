@@ -1,6 +1,20 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"Vf51PD":[function(require,module,exports){
-module.exports = function () {
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var sj = require('../');
+var docLoaded = setInterval(checkDomReady);
+
+function checkDomReady() {
+  if (document.readyState === "complete") {
+    clearInterval(docLoaded);
+    sj.bind(document.body);
+  }
+}
+
+},{"../":11}],"s/PsMv":[function(require,module,exports){
+var controller = require('./lib/controller');
+
+module.exports.scene = controller(function (scope) {
   var circles = [];
+
   for (var i = 0; i < 100; ++i) {
     circles.push({
       x: i * 5,
@@ -8,35 +22,42 @@ module.exports = function () {
     });
   }
 
-  var sj = require('sj');
-  sj.bind(document.getElementById('scene'), {
-    circles: circles
-  });
-};
+  scope.circles = circles;
+});
 
-},{"sj":6}],"./index":[function(require,module,exports){
-module.exports=require('Vf51PD');
-},{}],3:[function(require,module,exports){
+},{"./lib/controller":5}],"./controller":[function(require,module,exports){
+module.exports=require('s/PsMv');
+},{}],4:[function(require,module,exports){
 module.exports = function parseBinding(value) {
   var match = value.match(/\{(.+)\}/);
   return match && match[1];
 }
 
-},{}],4:[function(require,module,exports){
-var parseBinding = require('./bindingParser');
+},{}],5:[function(require,module,exports){
+module.exports = function (controller) {
+  var sj = require('sj');
 
-module.exports = function (root, attribute, settings) {
-  var name = attribute.nodeName.split(':');
-  if (name.length !== 2) return;
-  var model = settings.model;
-  var modelKey = parseBinding(attribute.nodeValue) || attribute.nodeValue;
-  // todo: validate?
-  root.setAttributeNS(null, name[1], settings.model[modelKey]);
+  return function(root, model, requires) {
+    // remove ourselves
+    var child = root.children[0];
+    root.parentNode.replaceChild(child, root);
+    controller(model);
+    sj.bind(child, model, requires);
+  };
 };
 
+},{"sj":8}],6:[function(require,module,exports){
+var parseBinding = require('./bindingParser');
 
-},{"./bindingParser":3}],5:[function(require,module,exports){
-module.exports = function (root, ctx) {
+module.exports = function (root, attribute, model, requires) {
+  var name = attribute.nodeName.split(':');
+  if (name.length !== 2) return;
+  var modelKey = parseBinding(attribute.nodeValue) || attribute.nodeValue;
+  root.setAttributeNS(null, name[1], model[modelKey]);
+};
+
+},{"./bindingParser":4}],7:[function(require,module,exports){
+module.exports = function (root, model, requires) {
   var bind = require('sj').bind; // require sj, we gonna go recursive
   var parent = root.parentNode;
   parent.removeChild(root);
@@ -46,14 +67,14 @@ module.exports = function (root, ctx) {
   // just to make sure we modify subtree on next iteration
   // of event loop:
   setTimeout(function () {
-    getCollection(itemsSource, ctx.model).forEach(renderChildren);
+    getCollection(itemsSource, model).forEach(renderChildren);
   });
 
   function renderChildren(model) {
     for (var i = 0; i < root.childNodes.length; ++i) {
       var childNode = root.childNodes[i].cloneNode(true);
       parent.appendChild(childNode);
-      bind(childNode, model, ctx.requires);
+      bind(childNode, model, requires);
     }
   }
 };
@@ -70,9 +91,10 @@ function getCollection(bindingExpression, model) {
   return model[sourceKey];
 }
 
-},{"./bindingParser":3,"sj":6}],6:[function(require,module,exports){
+},{"./bindingParser":4,"sj":8}],8:[function(require,module,exports){
 module.exports.bind = function(root, model, requires) {
   requires = requires || {};
+  model = model || {};
 
   compileSubtree(root);
 
@@ -96,7 +118,7 @@ module.exports.bind = function(root, model, requires) {
         throw new Error('Cannot find function ' + nameParts[1] + ' in module ' + nameParts[0]);
       }
 
-      ctor(node, { model: model, requires: requires });
+      ctor(node, model, requires);
       foundComponent = true;
     }
 
@@ -125,14 +147,16 @@ module.exports.bind = function(root, model, requires) {
       var module = require(requires[nameParts[0]]);
       var ctor = module[nameParts[1]] || module['*'];
       if (typeof ctor === 'function') {
-        ctor(node, attribute, { model: model, requires: requires });
+        ctor(node, attribute, model, requires);
       } else {
         throw new Error('Cannot find ' + nameParts[1] + ' attribute in module ' + nameParts[0]);
       }
     }
   }
-}
+};
 
+},{}],"./svgcore":[function(require,module,exports){
+module.exports=require('afnvge');
 },{}],"afnvge":[function(require,module,exports){
 /**
  * This module implements bindings for svg
@@ -142,7 +166,6 @@ module.exports = {
   '*' : require('./lib/defaultDataBinder') 
 };
 
-},{"./lib/defaultDataBinder":4,"./lib/items":5}],"./svgcore":[function(require,module,exports){
-module.exports=require('afnvge');
-},{}]},{},[])
-;
+},{"./lib/defaultDataBinder":6,"./lib/items":7}],11:[function(require,module,exports){
+module.exports=require(8)
+},{}]},{},[1])

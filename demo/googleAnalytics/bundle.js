@@ -1,15 +1,4 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var sj = require('../');
-var docLoaded = setInterval(checkDomReady);
-
-function checkDomReady() {
-  if (document.readyState === "complete") {
-    clearInterval(docLoaded);
-    sj.bind(document.body);
-  }
-}
-
-},{"../":4}],"BmOHqG":[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"BmOHqG":[function(require,module,exports){
 // googleAnalytics.js:
 module.exports.analytics = function (root) {
   var domain = root.attributes.getNamedItem('domain').nodeValue;
@@ -26,7 +15,18 @@ module.exports.analytics = function (root) {
 
 },{}],"./googleAnalytics":[function(require,module,exports){
 module.exports=require('BmOHqG');
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
+var sj = require('../');
+var docLoaded = setInterval(checkDomReady);
+
+function checkDomReady() {
+  if (document.readyState === "complete") {
+    clearInterval(docLoaded);
+    sj.bind(document.body);
+  }
+}
+
+},{"../":4}],4:[function(require,module,exports){
 module.exports.bind = function(root, model, requires) {
   requires = requires || {};
 
@@ -89,4 +89,4 @@ module.exports.bind = function(root, model, requires) {
   }
 }
 
-},{}]},{},[1])
+},{}]},{},[3])

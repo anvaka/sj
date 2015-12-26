@@ -1,10 +1,10 @@
 # sj
 
-This module provides declarative `require` in your DOM markup. 
+This module was an experiment to provide declarative `require` in the DOM markup.
 
 # Example
 
-This markup will install google analytics script on your page. 
+This markup will install google analytics script on your page.
 
 ``` html
 <!DOCTYPE html>
